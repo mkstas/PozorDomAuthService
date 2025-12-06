@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Dockerfile" />
+  </Folder>
+  <Project Path="PozorDomAuthService.Api/PozorDomAuthService.Api.csproj" />
+  <Project Path="PozorDomAuthService.Application/PozorDomAuthService.Application.csproj" Id="f7fb54e4-cdbc-4224-a04f-ba4394fec436" />
+  <Project Path="PozorDomAuthService.Domain/PozorDomAuthService.Domain.csproj" Id="b379c2f1-5cd7-4993-a908-be8f982fc98b" />
+  <Project Path="PozorDomAuthService.Infrastructure/PozorDomAuthService.Infrastructure.csproj" Id="0570370e-fc31-4309-ae0b-0f648f268ae8" />
+  <Project Path="PozorDomAuthService.Persistence/PozorDomAuthService.Persistence.csproj" Id="8bebb6d1-6ef0-4a77-a67f-675fe9e5002d" />
+</Solution>

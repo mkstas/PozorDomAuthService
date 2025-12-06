@@ -1,0 +1,6 @@
+@PozorDomAuthService.Api_HostAddress = http://localhost:5007
+
+GET {{PozorDomAuthService.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
