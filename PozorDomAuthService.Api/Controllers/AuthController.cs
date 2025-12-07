@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using PozorDomAuthService.Api.Contracts;
 using PozorDomAuthService.Domain.Interfaces.Services;
 

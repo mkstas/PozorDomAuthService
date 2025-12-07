@@ -16,7 +16,7 @@ namespace PozorDomAuthService.Application.Services
         public async Task<string> LoginOrRegisterAsync(string phoneNumber)
         {
             var user = await _userRepository.GetByPhoneNumberAsync(phoneNumber)
-                    ?? await RegisterNewUserAsync(phoneNumber);
+                ?? await RegisterNewUserAsync(phoneNumber);
 
             return _jwtProvider.GenerateToken(user);
         }
