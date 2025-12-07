@@ -21,12 +21,14 @@ namespace PozorDomAuthService.Persistence.Configurations
                    .IsUnique();
 
             builder.Property(u => u.CreatedAt)
-                   .HasDefaultValueSql("GETUTCDATE()")
+                   .HasColumnType("timestamp with time zone")
+                   .HasDefaultValueSql("NOW()")
                    .ValueGeneratedOnAdd()
                    .IsRequired();
 
-            builder.Property(u => u.CreatedAt)
-                   .HasDefaultValueSql("GETUTCDATE()")
+            builder.Property(u => u.UpdatedAt)
+                   .HasColumnType("timestamp with time zone")
+                   .HasDefaultValueSql("NOW()")
                    .ValueGeneratedOnAddOrUpdate()
                    .IsRequired();
         }
