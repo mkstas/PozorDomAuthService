@@ -11,7 +11,7 @@ namespace PozorDomAuthService.Api.Controllers
     {
         private readonly IUserService _userService = userService;
 
-        [HttpPost]
+        [HttpPost("login")]
         public async Task<IResult> Login([FromBody] LoginRequest request)
         {
             try
@@ -28,6 +28,14 @@ namespace PozorDomAuthService.Api.Controllers
 
                 return Results.InternalServerError();
             }
+        }
+
+        [HttpDelete("logout")]
+        public async Task<IResult> Delete()
+        {
+            HttpContext.Response.Cookies.Delete("very-non-secret-cookie");
+
+            return Results.NoContent();
         }
     }
 }
