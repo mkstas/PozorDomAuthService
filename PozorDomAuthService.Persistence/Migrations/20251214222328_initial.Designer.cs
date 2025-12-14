@@ -12,7 +12,7 @@ using PozorDomAuthService.Persistence;
 namespace PozorDomAuthService.Persistence.Migrations
 {
     [DbContext(typeof(PozorDomAuthServiceDbContext))]
-    [Migration("20251207121522_initial")]
+    [Migration("20251214222328_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -38,8 +38,8 @@ namespace PozorDomAuthService.Persistence.Migrations
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("character varying(11)");
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAddOrUpdate()

@@ -15,7 +15,7 @@ namespace PozorDomAuthService.Persistence.Configurations
 
             builder.Property(u => u.PhoneNumber)
                    .IsRequired()
-                   .HasMaxLength(11);
+                   .HasMaxLength(16);
 
             builder.HasIndex(u => u.PhoneNumber)
                    .IsUnique();
