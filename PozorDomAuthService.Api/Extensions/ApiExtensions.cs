@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using PozorDomAuthService.Api.Middlewares;
 using PozorDomAuthService.Infrastructure.Common;
 using PozorDomAuthService.Persistence;
 using System.Security.Claims;
@@ -27,6 +28,21 @@ namespace PozorDomAuthService.Api.Extensions
                 {
                     options.UseNpgsql(configuration.GetConnectionString(nameof(PozorDomAuthServiceDbContext)));
                 });
+        }
+
+        public static void AddCorsConfiguration(
+            this IServiceCollection services)
+        {
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy.WithOrigins("http://localhost:3000")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials();
+                });
+            });
         }
 
         public static void AddApiAuthentification(
@@ -66,6 +82,12 @@ namespace PozorDomAuthService.Api.Extensions
                 ?? throw new UnauthorizedAccessException("User Id claim not found.");
 
             return Guid.Parse(userIdClaim.Value);
+        }
+
+        public static IApplicationBuilder UseGlobalExceptionHandler(
+            this IApplicationBuilder builder)
+        {
+            return builder.UseMiddleware<GlobalExceptionHandler>();
         }
     }
 }

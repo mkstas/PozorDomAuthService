@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddCorsConfiguration();
 
 builder.Services.AddJwtConfiguration(builder.Configuration);
 builder.Services.AddDatabaseContext(builder.Configuration);
@@ -27,6 +28,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseGlobalExceptionHandler();
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
