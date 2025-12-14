@@ -29,5 +29,12 @@ namespace PozorDomAuthService.Application.Services
 
             return user ?? throw new InternalServerException("Register user failed.");
         }
+
+        public async Task<UserEntity> GetUserByIdAsync(Guid userId)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+
+            return user ?? throw new NotFoundException("User not found.");
+        }
     }
 }

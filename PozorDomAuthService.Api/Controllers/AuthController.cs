@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PozorDomAuthService.Api.Contracts;
+using PozorDomAuthService.Api.Extensions;
 using PozorDomAuthService.Domain.Interfaces.Services;
 
 namespace PozorDomAuthService.Api.Controllers
@@ -14,28 +16,36 @@ namespace PozorDomAuthService.Api.Controllers
         [HttpPost("login")]
         public async Task<IResult> Login([FromBody] LoginRequest request)
         {
-            try
+            var token = await _userService.LoginOrRegisterAsync(request.PhoneNumber);
+            var cookieOptions = new CookieOptions
             {
-                var token = await _userService.LoginOrRegisterAsync(request.PhoneNumber);
+                HttpOnly = true,
+                Secure = false,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow.AddDays(30)
+            };
+            HttpContext.Response.Cookies.Append("very-non-secret-cookie", token, cookieOptions);
 
-                HttpContext.Response.Cookies.Append("very-non-secret-cookie", token);
-
-                return Results.NoContent();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-
-                return Results.InternalServerError();
-            }
+            return Results.NoContent();
         }
 
         [HttpDelete("logout")]
+        [Authorize]
         public async Task<IResult> Delete()
         {
             HttpContext.Response.Cookies.Delete("very-non-secret-cookie");
 
             return Results.NoContent();
+        }
+
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<IResult> GetMe()
+        {
+            var user = await _userService.GetUserByIdAsync(User.GetUserId());
+            MeResponse response = new(user.Id, user.PhoneNumber);
+
+            return Results.Ok(response);
         }
     }
 }
