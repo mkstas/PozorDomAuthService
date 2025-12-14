@@ -11,23 +11,10 @@ namespace PozorDomAuthService.Api.Extensions
 {
     public static class ApiExtensions
     {
-        public static void AddJwtConfiguration(
-            this IServiceCollection services,
-            IConfiguration configuration)
+        public static void UseGlobalExceptionHandler(
+            this IApplicationBuilder builder)
         {
-            services.Configure<JwtOptions>(
-                configuration.GetSection(nameof(JwtOptions)));
-        }
-
-        public static void AddDatabaseContext(
-            this IServiceCollection services,
-            IConfiguration configuration)
-        {
-            services.AddDbContext<PozorDomAuthServiceDbContext>(
-                options =>
-                {
-                    options.UseNpgsql(configuration.GetConnectionString(nameof(PozorDomAuthServiceDbContext)));
-                });
+            builder.UseMiddleware<GlobalExceptionHandler>();
         }
 
         public static void AddCorsConfiguration(
@@ -43,6 +30,25 @@ namespace PozorDomAuthService.Api.Extensions
                           .AllowCredentials();
                 });
             });
+        }
+
+        public static void AddDatabaseContext(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            services.AddDbContext<PozorDomAuthServiceDbContext>(
+                options =>
+                {
+                    options.UseNpgsql(configuration.GetConnectionString(nameof(PozorDomAuthServiceDbContext)));
+                });
+        }
+
+        public static void AddJwtConfiguration(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            services.Configure<JwtOptions>(
+                configuration.GetSection(nameof(JwtOptions)));
         }
 
         public static void AddApiAuthentification(
@@ -82,12 +88,6 @@ namespace PozorDomAuthService.Api.Extensions
                 ?? throw new UnauthorizedAccessException("User Id claim not found.");
 
             return Guid.Parse(userIdClaim.Value);
-        }
-
-        public static IApplicationBuilder UseGlobalExceptionHandler(
-            this IApplicationBuilder builder)
-        {
-            return builder.UseMiddleware<GlobalExceptionHandler>();
         }
     }
 }
