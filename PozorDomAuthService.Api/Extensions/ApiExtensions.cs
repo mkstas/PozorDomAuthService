@@ -18,13 +18,17 @@ namespace PozorDomAuthService.Api.Extensions
         }
 
         public static void AddCorsConfiguration(
-            this IServiceCollection services)
+            this IServiceCollection services,
+            IConfiguration configuration)
         {
+            var allowedOrigins = configuration.GetSection("AllowedOrigins").Get<string[]>()
+                ?? throw new InvalidOperationException("AllowedOrigins not configured.");
+
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(policy =>
                 {
-                    policy.WithOrigins("http://localhost:3000")
+                    policy.WithOrigins(allowedOrigins)
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials();
@@ -36,10 +40,13 @@ namespace PozorDomAuthService.Api.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
+            var connectionString = configuration.GetConnectionString(nameof(PozorDomAuthServiceDbContext))
+                ?? throw new InvalidOperationException("Database connection string not configured.");
+
             services.AddDbContext<PozorDomAuthServiceDbContext>(
                 options =>
                 {
-                    options.UseNpgsql(configuration.GetConnectionString(nameof(PozorDomAuthServiceDbContext)));
+                    options.UseNpgsql(connectionString);
                 });
         }
 
@@ -47,8 +54,10 @@ namespace PozorDomAuthService.Api.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            services.Configure<JwtOptions>(
-                configuration.GetSection(nameof(JwtOptions)));
+            var jwtOptions = configuration.GetSection(nameof(JwtOptions))
+                ?? throw new InvalidOperationException("JwtOptions not configured.");
+
+            services.Configure<JwtOptions>(jwtOptions);
         }
 
         public static void AddApiAuthentification(

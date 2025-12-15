@@ -11,8 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
-builder.Services.AddCorsConfiguration();
 
+builder.Services.AddCorsConfiguration(builder.Configuration);
 builder.Services.AddJwtConfiguration(builder.Configuration);
 builder.Services.AddDatabaseContext(builder.Configuration);
 builder.Services.AddApiAuthentification(builder.Configuration);
