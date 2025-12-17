@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PozorDomAuthService.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class initial_migration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,6 +17,9 @@ namespace PozorDomAuthService.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     PhoneNumber = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false, defaultValue: ""),
+                    FullName = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false, defaultValue: ""),
+                    ImageUrl = table.Column<string>(type: "text", nullable: false, defaultValue: ""),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()")
                 },

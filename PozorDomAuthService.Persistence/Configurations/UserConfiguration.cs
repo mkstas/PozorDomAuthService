@@ -20,6 +20,16 @@ namespace PozorDomAuthService.Persistence.Configurations
             builder.HasIndex(u => u.PhoneNumber)
                    .IsUnique();
 
+            builder.Property(u => u.FullName)
+                   .HasMaxLength(64)
+                   .HasDefaultValue(string.Empty);
+
+            builder.Property(u => u.Email)
+                   .HasDefaultValue(string.Empty);
+
+            builder.Property(u => u.ImageUrl)
+                   .HasDefaultValue(string.Empty);
+
             builder.Property(u => u.CreatedAt)
                    .HasColumnType("timestamp with time zone")
                    .HasDefaultValueSql("NOW()")

@@ -13,7 +13,11 @@ namespace PozorDomAuthService.Persistence.Repositories
         public async Task CreateAsync(string phoneNumber)
         {
             await _context.Users.AddAsync(
-                new UserEntity(Guid.NewGuid(), phoneNumber));
+                new UserEntity
+                {
+                    Id = Guid.NewGuid(),
+                    PhoneNumber = phoneNumber,
+                });
 
             try
             {
@@ -37,6 +41,15 @@ namespace PozorDomAuthService.Persistence.Repositories
             return await _context.Users
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+        }
+
+        public async Task<int> UpdateAsync(Guid id, string fullName, string imageUrl)
+        {
+            return await _context.Users
+                .Where(u => u.Id == id)
+                .ExecuteUpdateAsync(u => u
+                    .SetProperty(user => user.FullName, fullName)
+                    .SetProperty(user => user.ImageUrl, imageUrl));
         }
     }
 }
