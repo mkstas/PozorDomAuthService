@@ -36,5 +36,13 @@ namespace PozorDomAuthService.Application.Services
 
             return user ?? throw new NotFoundException("User not found.");
         }
+
+        public async Task UpdateUserAsync(Guid id, string fullName)
+        {
+            var rowsAffected = await _userRepository.UpdateAsync(id, fullName, string.Empty);
+
+            if (rowsAffected == 0)
+                throw new NotFoundException("User not found.");
+        }
     }
 }

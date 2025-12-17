@@ -31,7 +31,7 @@ namespace PozorDomAuthService.Api.Controllers
 
         [HttpDelete("logout")]
         [Authorize]
-        public async Task<IResult> Delete()
+        public async Task<IResult> Logout()
         {
             HttpContext.Response.Cookies.Delete("very-non-secret-cookie");
 
@@ -46,6 +46,15 @@ namespace PozorDomAuthService.Api.Controllers
             MeResponse response = new(user.Id, user.PhoneNumber);
 
             return Results.Ok(response);
+        }
+
+        [HttpPut("me")]
+        [Authorize]
+        public async Task<IResult> UpdateMe([FromBody] UpdateUserRequest request)
+        {
+            await _userService.UpdateUserAsync(User.GetUserId(), request.FullName);
+
+            return Results.NoContent();
         }
     }
 }
