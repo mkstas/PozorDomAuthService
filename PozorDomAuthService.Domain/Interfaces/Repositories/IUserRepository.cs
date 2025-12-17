@@ -7,5 +7,6 @@ namespace PozorDomAuthService.Domain.Interfaces.Repositories
         Task CreateAsync(string phoneNumber);
         Task<UserEntity?> GetByIdAsync(Guid id);
         Task<UserEntity?> GetByPhoneNumberAsync(string phoneNumber);
+        Task<int> UpdateAsync(Guid id, string fullName, string imageUrl);
     }
 }
