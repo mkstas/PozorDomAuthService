@@ -28,7 +28,7 @@ namespace PozorDomAuthService.Api.Controllers
 
             return Results.NoContent();
         }
-
+        
         [HttpDelete("logout")]
         [Authorize]
         public async Task<IResult> Logout()
@@ -43,17 +43,43 @@ namespace PozorDomAuthService.Api.Controllers
         public async Task<IResult> GetMe()
         {
             var user = await _userService.GetUserByIdAsync(User.GetUserId());
-            MeResponse response = new(user.Id, user.PhoneNumber);
+            UserResponse response = 
+                new(user.Id, user.PhoneNumber, user.FullName, user.Email, user.ImageUrl);
 
             return Results.Ok(response);
         }
 
-        [HttpPut("me")]
+        [HttpPatch("me/phone")]
         [Authorize]
-        public async Task<IResult> UpdateMe([FromBody] UpdateUserRequest request)
+        public async Task<IResult> UpdateMePhoneNumber([FromBody] UpdateUserPhoneNumberRequest request)
         {
-            await _userService.UpdateUserAsync(User.GetUserId(), request.FullName);
+            await _userService.UpdateUserPhoneNumberAsync(User.GetUserId(), request.PhoneNumber);
 
+            return Results.NoContent();
+        }
+
+        [HttpPatch("me/info")]
+        [Authorize]
+        public async Task<IResult> UpdateMeInfo([FromBody] UpdateUserInfoRequest request)
+        {
+            await _userService.UpdateUserInfoAsync(User.GetUserId(), request.FullName);
+
+            return Results.NoContent();
+        }
+
+        [HttpPatch("me/email")]
+        [Authorize]
+        public async Task<IResult> UpdateMeEmail([FromBody] UpdateUserEmailRequest request)
+        {
+            await _userService.UpdateUserEmailAsync(User.GetUserId(), request.Email);
+
+            return Results.NoContent();
+        }
+
+        [HttpPatch("me/image")]
+        [Authorize]
+        public async Task<IResult> UpdateMeImage()
+        {
             return Results.NoContent();
         }
     }

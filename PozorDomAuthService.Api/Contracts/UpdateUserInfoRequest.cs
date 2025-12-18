@@ -2,7 +2,7 @@
 
 namespace PozorDomAuthService.Api.Contracts
 {
-    public record UpdateUserRequest(
+    public record UpdateUserInfoRequest(
         [MaxLength(64, ErrorMessage = "FullName cannot exceed 64 characters.")]
         string FullName
     );
