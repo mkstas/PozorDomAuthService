@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using PozorDomAuthService.Domain.Entities;
 using PozorDomAuthService.Domain.Interfaces.Repositories;
 using PozorDomAuthService.Infrastructure.Exceptions;
@@ -23,7 +24,7 @@ namespace PozorDomAuthService.Persistence.Repositories
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateException ex) when (ex.IsUniqueKeyViolation("IX_Users_PhoneNumber"))
+            catch (PostgresException ex) when (ex.IsUniqueKeyViolation("IX_Users_PhoneNumber"))
             {
                 throw new ConflictException("User with this phone number already exists.");
             }
@@ -43,12 +44,42 @@ namespace PozorDomAuthService.Persistence.Repositories
                 .FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
         }
 
-        public async Task<int> UpdateAsync(Guid id, string fullName, string imageUrl)
+        public async Task<int> UpdatePhoneNumberAsync(Guid id, string phoneNumber)
+        {
+            try
+            {
+                return await _context.Users
+                    .Where(u => u.Id == id)
+                    .ExecuteUpdateAsync(u => u
+                        .SetProperty(user => user.PhoneNumber, phoneNumber));
+            }
+            catch (PostgresException ex) when (ex.IsUniqueKeyViolation("IX_Users_PhoneNumber"))
+            {
+                throw new ConflictException("User with this phone number already exists.");
+            }
+        }
+
+        public async Task<int> UpdateInfoAsync(Guid id, string fullName)
         {
             return await _context.Users
                 .Where(u => u.Id == id)
                 .ExecuteUpdateAsync(u => u
-                    .SetProperty(user => user.FullName, fullName)
+                    .SetProperty(user => user.FullName, fullName));
+        }
+
+        public async Task<int> UpdateEmailAsync(Guid id, string email)
+        {
+            return await _context.Users
+                .Where(u => u.Id == id)
+                .ExecuteUpdateAsync(u => u
+                    .SetProperty(user => user.Email, email));
+        }
+
+        public async Task<int> UpdateImageUrlAsync(Guid id, string imageUrl)
+        {
+            return await _context.Users
+                .Where(u => u.Id == id)
+                .ExecuteUpdateAsync(u => u
                     .SetProperty(user => user.ImageUrl, imageUrl));
         }
     }
