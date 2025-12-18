@@ -6,6 +6,9 @@ namespace PozorDomAuthService.Domain.Interfaces.Services
     {
         Task<string> LoginOrRegisterAsync(string phoneNumber);
         Task<UserEntity> GetUserByIdAsync(Guid userId);
-        Task UpdateUserAsync(Guid id, string fullName);
+        Task UpdateUserPhoneNumberAsync(Guid id, string phoneNumber);
+        Task UpdateUserInfoAsync(Guid id, string fullName);
+        Task UpdateUserEmailAsync(Guid id, string email);
+        Task UpdateUserImageUrlAsync(Guid id, string imageUrl);
     }
 }
