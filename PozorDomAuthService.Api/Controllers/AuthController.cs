@@ -1,17 +1,21 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using PozorDomAuthService.Api.Contracts;
 using PozorDomAuthService.Api.Extensions;
 using PozorDomAuthService.Domain.Interfaces.Services;
+using PozorDomAuthService.Infrastructure.Common;
 
 namespace PozorDomAuthService.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/auth")]
     public class AuthController(
-        IUserService userService) : ControllerBase
+        IUserService userService,
+        IOptions<JwtOptions> jwtOptions) : ControllerBase
     {
         private readonly IUserService _userService = userService;
+        private readonly JwtOptions _jwtOptions = jwtOptions.Value;
 
         [HttpPost("login")]
         public async Task<IResult> Login([FromBody] LoginRequest request)
@@ -24,7 +28,7 @@ namespace PozorDomAuthService.Api.Controllers
                 SameSite = SameSiteMode.Strict,
                 Expires = DateTimeOffset.UtcNow.AddDays(30)
             };
-            HttpContext.Response.Cookies.Append("very-non-secret-cookie", token, cookieOptions);
+            HttpContext.Response.Cookies.Append(_jwtOptions.CookieName, token, cookieOptions);
 
             return Results.NoContent();
         }
@@ -33,7 +37,16 @@ namespace PozorDomAuthService.Api.Controllers
         [Authorize]
         public async Task<IResult> Logout()
         {
-            HttpContext.Response.Cookies.Delete("very-non-secret-cookie");
+            HttpContext.Response.Cookies.Delete(_jwtOptions.CookieName);
+
+            return Results.NoContent();
+        }
+
+        [HttpGet("validate")]
+        [Authorize]
+        public async Task<IResult> Validate()
+        {
+            HttpContext.Response.Headers.Append("X-User-Id", User.GetUserId().ToString());
 
             return Results.NoContent();
         }
