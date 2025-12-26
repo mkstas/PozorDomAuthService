@@ -11,7 +11,7 @@ namespace PozorDomAuthService.Persistence.Repositories
     {
         private readonly PozorDomAuthServiceDbContext _context = context;
 
-        public async Task CreateAsync(string phoneNumber)
+        public async Task CreateUserAsync(string phoneNumber)
         {
             await _context.Users.AddAsync(
                 new UserEntity
@@ -24,61 +24,61 @@ namespace PozorDomAuthService.Persistence.Repositories
             {
                 await _context.SaveChangesAsync();
             }
-            catch (PostgresException ex) when (ex.IsUniqueKeyViolation("IX_Users_PhoneNumber"))
+            catch (DbUpdateException ex) when (ex.IsUniqueCreateConstraintViolation("IX_Users_PhoneNumber"))
             {
                 throw new ConflictException("User with this phone number already exists.");
             }
         }
 
-        public async Task<UserEntity?> GetByIdAsync(Guid id)
+        public async Task<UserEntity?> GetUserByIdAsync(Guid userId)
         {
             return await _context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == id);
+                .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
-        public async Task<UserEntity?> GetByPhoneNumberAsync(string phoneNumber)
+        public async Task<UserEntity?> GetUserByPhoneNumberAsync(string phoneNumber)
         {
             return await _context.Users
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
         }
 
-        public async Task<int> UpdatePhoneNumberAsync(Guid id, string phoneNumber)
+        public async Task<int> UpdatePhoneNumberAsync(Guid userId, string phoneNumber)
         {
             try
             {
                 return await _context.Users
-                    .Where(u => u.Id == id)
+                    .Where(u => u.Id == userId)
                     .ExecuteUpdateAsync(u => u
                         .SetProperty(user => user.PhoneNumber, phoneNumber));
             }
-            catch (PostgresException ex) when (ex.IsUniqueKeyViolation("IX_Users_PhoneNumber"))
+            catch (PostgresException ex) when (ex.IsUniqueUpdateKeyViolation("IX_Users_PhoneNumber"))
             {
                 throw new ConflictException("User with this phone number already exists.");
             }
         }
 
-        public async Task<int> UpdateInfoAsync(Guid id, string fullName)
+        public async Task<int> UpdateInfoAsync(Guid userId, string fullName)
         {
             return await _context.Users
-                .Where(u => u.Id == id)
+                .Where(u => u.Id == userId)
                 .ExecuteUpdateAsync(u => u
                     .SetProperty(user => user.FullName, fullName));
         }
 
-        public async Task<int> UpdateEmailAsync(Guid id, string email)
+        public async Task<int> UpdateEmailAsync(Guid userId, string email)
         {
             return await _context.Users
-                .Where(u => u.Id == id)
+                .Where(u => u.Id == userId)
                 .ExecuteUpdateAsync(u => u
                     .SetProperty(user => user.Email, email));
         }
 
-        public async Task<int> UpdateImageUrlAsync(Guid id, string imageUrl)
+        public async Task<int> UpdateImageUrlAsync(Guid userId, string imageUrl)
         {
             return await _context.Users
-                .Where(u => u.Id == id)
+                .Where(u => u.Id == userId)
                 .ExecuteUpdateAsync(u => u
                     .SetProperty(user => user.ImageUrl, imageUrl));
         }

@@ -15,7 +15,7 @@ namespace PozorDomAuthService.Application.Services
 
         public async Task<string> LoginOrRegisterAsync(string phoneNumber)
         {
-            var user = await _userRepository.GetByPhoneNumberAsync(phoneNumber)
+            var user = await _userRepository.GetUserByPhoneNumberAsync(phoneNumber)
                 ?? await RegisterNewUserAsync(phoneNumber);
 
             return _jwtProvider.GenerateToken(user);
@@ -23,45 +23,45 @@ namespace PozorDomAuthService.Application.Services
 
         private async Task<UserEntity> RegisterNewUserAsync(string phoneNumber)
         {
-            await _userRepository.CreateAsync(phoneNumber);
+            await _userRepository.CreateUserAsync(phoneNumber);
 
-            var user = await _userRepository.GetByPhoneNumberAsync(phoneNumber);
+            var user = await _userRepository.GetUserByPhoneNumberAsync(phoneNumber);
 
             return user ?? throw new InternalServerException("Register user failed.");
         }
 
         public async Task<UserEntity> GetUserByIdAsync(Guid userId)
         {
-            var user = await _userRepository.GetByIdAsync(userId);
+            var user = await _userRepository.GetUserByIdAsync(userId);
 
             return user ?? throw new NotFoundException("User not found.");
         }
 
-        public async Task UpdateUserPhoneNumberAsync(Guid id, string phoneNumber)
+        public async Task UpdateUserPhoneNumberAsync(Guid userId, string phoneNumber)
         {
-            var rowsAffected = await _userRepository.UpdatePhoneNumberAsync(id, phoneNumber);
+            var rowsAffected = await _userRepository.UpdatePhoneNumberAsync(userId, phoneNumber);
 
             if (rowsAffected == 0)
                 throw new NotFoundException("User not found.");
         }
 
-        public async Task UpdateUserInfoAsync(Guid id, string fullName)
+        public async Task UpdateUserInfoAsync(Guid userId, string fullName)
         {
-            var rowsAffected = await _userRepository.UpdateInfoAsync(id, fullName);
+            var rowsAffected = await _userRepository.UpdateInfoAsync(userId, fullName);
 
             if (rowsAffected == 0)
                 throw new NotFoundException("User not found.");
         }
 
-        public async Task UpdateUserEmailAsync(Guid id, string email)
+        public async Task UpdateUserEmailAsync(Guid userId, string email)
         {
-            var rowsAffected = await _userRepository.UpdateEmailAsync(id, email);
+            var rowsAffected = await _userRepository.UpdateEmailAsync(userId, email);
 
             if (rowsAffected == 0)
                 throw new NotFoundException("User not found.");
         }
 
-        public Task UpdateUserImageUrlAsync(Guid id, string imageUrl)
+        public Task UpdateUserImageUrlAsync(Guid userId, string imageUrl)
         {
             throw new NotImplementedException();
         }

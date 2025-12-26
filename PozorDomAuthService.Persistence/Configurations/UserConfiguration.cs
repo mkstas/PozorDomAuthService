@@ -29,18 +29,6 @@ namespace PozorDomAuthService.Persistence.Configurations
 
             builder.Property(u => u.ImageUrl)
                    .HasDefaultValue(string.Empty);
-
-            builder.Property(u => u.CreatedAt)
-                   .HasColumnType("timestamp with time zone")
-                   .HasDefaultValueSql("NOW()")
-                   .ValueGeneratedOnAdd()
-                   .IsRequired();
-
-            builder.Property(u => u.UpdatedAt)
-                   .HasColumnType("timestamp with time zone")
-                   .HasDefaultValueSql("NOW()")
-                   .ValueGeneratedOnAddOrUpdate()
-                   .IsRequired();
         }
     }
 }

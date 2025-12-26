@@ -12,8 +12,8 @@ using PozorDomAuthService.Persistence;
 namespace PozorDomAuthService.Persistence.Migrations
 {
     [DbContext(typeof(PozorDomAuthServiceDbContext))]
-    [Migration("20251217021726_initial_migration")]
-    partial class initial_migration
+    [Migration("20251226082616_add_user_table")]
+    partial class add_user_table
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,11 +30,6 @@ namespace PozorDomAuthService.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -59,11 +54,6 @@ namespace PozorDomAuthService.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(16)
                         .HasColumnType("character varying(16)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
 
                     b.HasKey("Id");
 
