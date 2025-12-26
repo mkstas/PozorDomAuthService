@@ -8,27 +8,18 @@ namespace PozorDomAuthService.Infrastructure.Providers
         IWebHostEnvironment environment) : IImageProvider
     {
         private readonly IWebHostEnvironment _environment = environment;
-        private readonly string[] allowedImageExtensions = { ".jpg", ".jpeg", ".png", ".gif" };
+        private readonly string[] allowedImageExtensions = [".jpg", ".jpeg", ".png", ".gif"];
 
         public async Task<string> SaveSingleImage(IFormFile image, string destination = "uploads")
         {
-            ArgumentNullException.ThrowIfNull(image);
+            ValidateImageFile(image);
+            ValidateImageExtension(image.FileName);
+            CreateFileDestination(destination);
+            var fileName = GenerateFileName(image.FileName);
+            var filePath = Path.Combine(_environment.WebRootPath, destination, fileName);
+            await SaveFileAsync(image, filePath);
 
-            var extension = Path.GetExtension(image.FileName).ToLowerInvariant();
-
-            if (!allowedImageExtensions.Contains(extension))
-                throw new InvalidDataException("Invalid image format.");
-
-            var folder = Path.Combine(_environment.WebRootPath, destination);
-            var fileName = Guid.NewGuid().ToString() + extension;
-            var filePath = Path.Combine(folder, fileName);
-
-            Directory.CreateDirectory(folder);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-                await image.CopyToAsync(stream);
-
-            return "uploads/" + fileName;
+            return $"{destination}/{fileName}";
         }
 
         public Task DeleteSingleImage(string destination)
@@ -42,6 +33,40 @@ namespace PozorDomAuthService.Infrastructure.Providers
                 File.Delete(imagePath);
 
             return Task.CompletedTask;
+        }
+
+        private void CreateFileDestination(string destination)
+        {
+            Directory.CreateDirectory(Path.Combine(_environment.WebRootPath, destination));
+        }
+
+        private void ValidateImageExtension(string originalFileName)
+        {
+            var extension = Path.GetExtension(originalFileName).ToLowerInvariant();
+
+            if (!allowedImageExtensions.Contains(extension))
+                throw new InvalidDataException("Invalid image format.");
+        }
+
+        private static void ValidateImageFile(IFormFile image)
+        {
+            ArgumentNullException.ThrowIfNull(image);
+
+            if (image.Length == 0)
+                throw new ArgumentException("Image file cannot be empty", nameof(image));
+        }
+
+        private static string GenerateFileName(string originalFileName)
+        {
+            var extension = Path.GetExtension(originalFileName).ToLowerInvariant();
+
+            return $"{Guid.NewGuid()}.{extension}";
+        }
+
+        private static async Task SaveFileAsync(IFormFile file, string destination)
+        {
+            var stream = new FileStream(destination, FileMode.Create);
+            await file.CopyToAsync(stream);
         }
     }
 }
