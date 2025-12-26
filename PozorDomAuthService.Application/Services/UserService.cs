@@ -61,9 +61,9 @@ namespace PozorDomAuthService.Application.Services
                 throw new NotFoundException("User not found.");
         }
 
-        public Task UpdateUserImageUrlAsync(Guid userId, string imageUrl)
+        public async Task UpdateUserImageUrlAsync(Guid userId, string imageUrl)
         {
-            throw new NotImplementedException();
+            await _userRepository.UpdateImageUrlAsync(userId, imageUrl);
         }
     }
 }

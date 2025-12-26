@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using PozorDomAuthService.Api.Contracts;
 using PozorDomAuthService.Api.Extensions;
+using PozorDomAuthService.Domain.Interfaces.Providers;
 using PozorDomAuthService.Domain.Interfaces.Services;
 using PozorDomAuthService.Infrastructure.Common;
 
@@ -12,10 +13,12 @@ namespace PozorDomAuthService.Api.Controllers
     [Route("api/v1/auth")]
     public class AuthController(
         IUserService userService,
-        IOptions<JwtOptions> jwtOptions) : ControllerBase
+        IOptions<JwtOptions> jwtOptions,
+        IImageProvider imageProvider) : ControllerBase
     {
         private readonly IUserService _userService = userService;
         private readonly JwtOptions _jwtOptions = jwtOptions.Value;
+        private readonly IImageProvider _imageProvider = imageProvider;
 
         [HttpPost("login")]
         public async Task<IResult> Login([FromBody] LoginRequest request)
@@ -91,8 +94,11 @@ namespace PozorDomAuthService.Api.Controllers
 
         [HttpPatch("me/image")]
         [Authorize]
-        public async Task<IResult> UpdateMeImage()
+        public async Task<IResult> UpdateMeImage(IFormFile image)
         {
+            var imageUrl = await _imageProvider.SaveSingleImage(image);
+            await _userService.UpdateUserImageUrlAsync(User.GetUserId(), imageUrl);
+
             return Results.NoContent();
         }
     }
