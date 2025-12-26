@@ -5,7 +5,6 @@ using PozorDomAuthService.Domain.Interfaces.Providers;
 using PozorDomAuthService.Domain.Interfaces.Repositories;
 using PozorDomAuthService.Domain.Interfaces.Services;
 using PozorDomAuthService.Infrastructure.Common;
-using PozorDomAuthService.Infrastructure.Providers;
 using PozorDomAuthService.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);

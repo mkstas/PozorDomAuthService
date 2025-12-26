@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using PozorDomAuthService.Domain.Interfaces.Providers;
 
-namespace PozorDomAuthService.Infrastructure.Providers
+namespace PozorDomAuthService.Infrastructure.Common
 {
     public class ImageProvider(
         IWebHostEnvironment environment) : IImageProvider
