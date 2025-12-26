@@ -1,4 +1,5 @@
-﻿using PozorDomAuthService.Domain.Entities;
+﻿using Microsoft.AspNetCore.Http;
+using PozorDomAuthService.Domain.Entities;
 
 namespace PozorDomAuthService.Domain.Interfaces.Services
 {
@@ -9,6 +10,6 @@ namespace PozorDomAuthService.Domain.Interfaces.Services
         Task UpdateUserPhoneNumberAsync(Guid userId, string phoneNumber);
         Task UpdateUserInfoAsync(Guid userId, string fullName);
         Task UpdateUserEmailAsync(Guid userId, string email);
-        Task UpdateUserImageUrlAsync(Guid userId, string imageUrl);
+        Task UpdateUserImageUrlAsync(Guid userId, IFormFile image);
     }
 }

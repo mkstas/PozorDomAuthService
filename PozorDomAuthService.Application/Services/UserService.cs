@@ -1,4 +1,5 @@
-﻿using PozorDomAuthService.Domain.Entities;
+﻿using Microsoft.AspNetCore.Http;
+using PozorDomAuthService.Domain.Entities;
 using PozorDomAuthService.Domain.Interfaces.Providers;
 using PozorDomAuthService.Domain.Interfaces.Repositories;
 using PozorDomAuthService.Domain.Interfaces.Services;
@@ -8,10 +9,12 @@ namespace PozorDomAuthService.Application.Services
 {
     public class UserService(
         IUserRepository userRepository,
-        IJwtProvider jwtProvider) : IUserService
+        IJwtProvider jwtProvider,
+        IImageProvider imageProvider) : IUserService
     {
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IJwtProvider _jwtProvider = jwtProvider;
+        private readonly IImageProvider _imageProvider = imageProvider;
 
         public async Task<string> LoginOrRegisterAsync(string phoneNumber)
         {
@@ -61,8 +64,16 @@ namespace PozorDomAuthService.Application.Services
                 throw new NotFoundException("User not found.");
         }
 
-        public async Task UpdateUserImageUrlAsync(Guid userId, string imageUrl)
+        public async Task UpdateUserImageUrlAsync(Guid userId, IFormFile image)
         {
+            var user = await _userRepository.GetUserByIdAsync(userId)
+                ?? throw new NotFoundException("User not found");
+
+            if (user.ImageUrl != "")
+                await _imageProvider.DeleteSingleImage(user.ImageUrl);
+
+            var imageUrl = await _imageProvider.SaveSingleImage(image);
+
             await _userRepository.UpdateImageUrlAsync(userId, imageUrl);
         }
     }

@@ -30,5 +30,18 @@ namespace PozorDomAuthService.Infrastructure.Providers
 
             return "uploads/" + fileName;
         }
+
+        public Task DeleteSingleImage(string destination)
+        {
+            if (string.IsNullOrEmpty(destination))
+                return Task.CompletedTask;
+
+            var imagePath = Path.Combine(_environment.WebRootPath, destination);
+
+            if (File.Exists(imagePath))
+                File.Delete(imagePath);
+
+            return Task.CompletedTask;
+        }
     }
 }
