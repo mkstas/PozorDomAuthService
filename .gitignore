@@ -3,6 +3,8 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+PozorDomAuthService.Api/wwwroot/uploads
+
 # User-specific files
 *.rsuser
 *.suo
