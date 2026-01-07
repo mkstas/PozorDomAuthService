@@ -30,9 +30,9 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseGlobalExceptionHandler();
 app.UseCors();
+app.UseGlobalExceptionHandler();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
+app.MapGroup("api/v1").WithTags("v1").MapControllers();
 app.Run();

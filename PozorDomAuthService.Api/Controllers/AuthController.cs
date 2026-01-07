@@ -9,7 +9,7 @@ using PozorDomAuthService.Infrastructure.Providers.Jwt;
 namespace PozorDomAuthService.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/auth")]
+    [Route("[controller]")]
     public class AuthController(
         IUserService userService,
         IOptions<JwtOptions> jwtOptions) : ControllerBase
