@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using PozorDomAuthService.Api.Extensions;
 using PozorDomAuthService.Application.Services;
-using PozorDomAuthService.Domain.Interfaces.Providers;
 using PozorDomAuthService.Domain.Interfaces.Repositories;
 using PozorDomAuthService.Domain.Interfaces.Services;
-using PozorDomAuthService.Infrastructure.Common;
+using PozorDomAuthService.Infrastructure.Providers.Images;
+using PozorDomAuthService.Infrastructure.Providers.Jwt;
 using PozorDomAuthService.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +14,7 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddCorsConfiguration(builder.Configuration);
 builder.Services.AddJwtConfiguration(builder.Configuration);
+builder.Services.AddImageConfiguration(builder.Configuration);
 builder.Services.AddDatabaseContext(builder.Configuration);
 builder.Services.AddApiAuthentification(builder.Configuration);
 

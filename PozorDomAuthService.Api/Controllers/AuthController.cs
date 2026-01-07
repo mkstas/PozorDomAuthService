@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using PozorDomAuthService.Api.Contracts;
 using PozorDomAuthService.Api.Extensions;
 using PozorDomAuthService.Domain.Interfaces.Services;
-using PozorDomAuthService.Infrastructure.Common;
+using PozorDomAuthService.Infrastructure.Providers.Jwt;
 
 namespace PozorDomAuthService.Api.Controllers
 {
@@ -18,7 +18,7 @@ namespace PozorDomAuthService.Api.Controllers
         private readonly JwtOptions _jwtOptions = jwtOptions.Value;
 
         [HttpPost("login")]
-        public async Task<IResult> Login([FromBody] LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var token = await _userService.LoginOrRegisterAsync(request.PhoneNumber);
             var cookieOptions = new CookieOptions
@@ -30,72 +30,72 @@ namespace PozorDomAuthService.Api.Controllers
             };
             HttpContext.Response.Cookies.Append(_jwtOptions.CookieName, token, cookieOptions);
 
-            return Results.NoContent();
+            return NoContent();
         }
         
         [HttpDelete("logout")]
         [Authorize]
-        public async Task<IResult> Logout()
+        public async Task<IActionResult> Logout()
         {
             HttpContext.Response.Cookies.Delete(_jwtOptions.CookieName);
 
-            return Results.NoContent();
+            return NoContent();
         }
 
         [HttpGet("validate")]
         [Authorize]
-        public async Task<IResult> Validate()
+        public async Task<IActionResult> Validate()
         {
             HttpContext.Response.Headers.Append("X-User-Id", User.GetUserId().ToString());
 
-            return Results.NoContent();
+            return NoContent();
         }
 
         [HttpGet("me")]
         [Authorize]
-        public async Task<IResult> GetMe()
+        public async Task<IActionResult> GetMe()
         {
             var user = await _userService.GetUserByIdAsync(User.GetUserId());
             UserResponse response = 
                 new(user.Id, user.PhoneNumber, user.FullName, user.Email, user.ImageUrl);
 
-            return Results.Ok(response);
+            return Ok(response);
         }
 
         [HttpPatch("me/phone")]
         [Authorize]
-        public async Task<IResult> UpdateMePhoneNumber([FromBody] UpdateUserPhoneNumberRequest request)
+        public async Task<IActionResult> UpdateMePhoneNumber([FromBody] UpdateUserPhoneNumberRequest request)
         {
             await _userService.UpdateUserPhoneNumberAsync(User.GetUserId(), request.PhoneNumber);
 
-            return Results.NoContent();
+            return NoContent();
         }
 
         [HttpPatch("me/info")]
         [Authorize]
-        public async Task<IResult> UpdateMeInfo([FromBody] UpdateUserInfoRequest request)
+        public async Task<IActionResult> UpdateMeInfo([FromBody] UpdateUserInfoRequest request)
         {
             await _userService.UpdateUserInfoAsync(User.GetUserId(), request.FullName);
 
-            return Results.NoContent();
+            return NoContent();
         }
 
         [HttpPatch("me/email")]
         [Authorize]
-        public async Task<IResult> UpdateMeEmail([FromBody] UpdateUserEmailRequest request)
+        public async Task<IActionResult> UpdateMeEmail([FromBody] UpdateUserEmailRequest request)
         {
             await _userService.UpdateUserEmailAsync(User.GetUserId(), request.Email);
 
-            return Results.NoContent();
+            return NoContent();
         }
 
         [HttpPatch("me/image")]
         [Authorize]
-        public async Task<IResult> UpdateMeImage(IFormFile image)
+        public async Task<IActionResult> UpdateMeImage(IFormFile image)
         {
-            await _userService.UpdateUserImageUrlAsync(User.GetUserId(), image);
+            await _userService.UpdateUserImageUrlAsync(User.GetUserId(), image.OpenReadStream(), image.FileName);
 
-            return Results.NoContent();
+            return NoContent();
         }
     }
 }

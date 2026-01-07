@@ -1,6 +1,6 @@
 ﻿using PozorDomAuthService.Domain.Entities;
 
-namespace PozorDomAuthService.Domain.Interfaces.Providers
+namespace PozorDomAuthService.Infrastructure.Providers.Jwt
 {
     public interface IJwtProvider
     {

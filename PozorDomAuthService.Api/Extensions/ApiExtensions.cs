@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PozorDomAuthService.Api.Middlewares;
-using PozorDomAuthService.Infrastructure.Common;
+using PozorDomAuthService.Infrastructure.Providers.Images;
+using PozorDomAuthService.Infrastructure.Providers.Jwt;
 using PozorDomAuthService.Persistence;
 using System.Security.Claims;
 using System.Text;
@@ -34,6 +36,16 @@ namespace PozorDomAuthService.Api.Extensions
                           .AllowCredentials();
                 });
             });
+        }
+
+        public static void AddImageConfiguration(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            var storageOptions = configuration.GetSection(nameof(ImageOptions))
+                ?? throw new InvalidOperationException("ImageOptions not configured.");
+
+            services.Configure<ImageOptions>(storageOptions);
         }
 
         public static void AddDatabaseContext(

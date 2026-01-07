@@ -1,4 +1,4 @@
-﻿namespace PozorDomAuthService.Infrastructure.Common
+﻿namespace PozorDomAuthService.Infrastructure.Providers.Jwt
 {
     public class JwtOptions
     {

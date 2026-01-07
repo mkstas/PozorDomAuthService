@@ -1,12 +1,11 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PozorDomAuthService.Domain.Entities;
-using PozorDomAuthService.Domain.Interfaces.Providers;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace PozorDomAuthService.Infrastructure.Common
+namespace PozorDomAuthService.Infrastructure.Providers.Jwt
 {
     public class JwtProvider(IOptions<JwtOptions> options) : IJwtProvider
     {
