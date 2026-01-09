@@ -21,8 +21,4 @@
     <ProjectReference Include="..\PozorDomAuthService.Persistence\PozorDomAuthService.Persistence.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\" />
-  </ItemGroup>
-
 </Project>
