@@ -2,19 +2,16 @@
 using PozorDomAuthService.Domain.Interfaces.Repositories;
 using PozorDomAuthService.Domain.Interfaces.Services;
 using PozorDomAuthService.Infrastructure.Exceptions;
-using PozorDomAuthService.Infrastructure.Providers.Images;
 using PozorDomAuthService.Infrastructure.Providers.Jwt;
 
 namespace PozorDomAuthService.Application.Services
 {
     public class UserService(
         IUserRepository userRepository,
-        IJwtProvider jwtProvider,
-        IImageProvider imageProvider) : IUserService
+        IJwtProvider jwtProvider) : IUserService
     {
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IJwtProvider _jwtProvider = jwtProvider;
-        private readonly IImageProvider _imageProvider = imageProvider;
 
         public async Task<string> LoginOrRegisterAsync(string phoneNumber)
         {
@@ -62,19 +59,6 @@ namespace PozorDomAuthService.Application.Services
 
             if (rowsAffected == 0)
                 throw new NotFoundException("User not found.");
-        }
-
-        public async Task UpdateUserImageUrlAsync(Guid userId, Stream imageStream, string originalName)
-        {
-            var user = await _userRepository.GetUserByIdAsync(userId)
-                ?? throw new NotFoundException("User not found");
-
-            if (user.ImageUrl != "")
-                await _imageProvider.DeleteSingleImage(user.ImageUrl);
-
-            var imageUrl = await _imageProvider.SaveSingleImage(imageStream, originalName);
-
-            await _userRepository.UpdateImageUrlAsync(userId, imageUrl);
         }
     }
 }

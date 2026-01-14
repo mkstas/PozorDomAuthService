@@ -88,14 +88,5 @@ namespace PozorDomAuthService.Api.Controllers
 
             return NoContent();
         }
-
-        [HttpPatch("me/image")]
-        [Authorize]
-        public async Task<IActionResult> UpdateMeImage(IFormFile image)
-        {
-            await _userService.UpdateUserImageUrlAsync(User.GetUserId(), image.OpenReadStream(), image.FileName);
-
-            return NoContent();
-        }
     }
 }
