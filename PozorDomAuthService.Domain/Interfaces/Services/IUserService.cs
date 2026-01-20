@@ -1,13 +1,11 @@
-﻿using PozorDomAuthService.Domain.Entities;
+﻿using PozorDomAuthService.Domain.Models;
 
 namespace PozorDomAuthService.Domain.Interfaces.Services
 {
     public interface IUserService
     {
-        Task<string> LoginOrRegisterAsync(string phoneNumber);
-        Task<UserEntity> GetUserByIdAsync(Guid userId);
-        Task UpdateUserPhoneNumberAsync(Guid userId, string phoneNumber);
-        Task UpdateUserInfoAsync(Guid userId, string fullName);
-        Task UpdateUserEmailAsync(Guid userId, string email);
+        Task<User> GetUserByIdAsync(Guid id);
+        Task ChangeEmailAsync(Guid id, string email);
+        Task ChangePasswordAsync(Guid id, string password, string newPassword);
     }
 }
