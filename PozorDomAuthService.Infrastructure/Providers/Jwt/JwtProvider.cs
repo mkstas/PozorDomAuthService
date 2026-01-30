@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using PozorDomAuthService.Domain.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -11,12 +10,12 @@ namespace PozorDomAuthService.Infrastructure.Providers.Jwt
     {
         private readonly JwtOptions _options = options.Value;
 
-        public string GenerateToken(UserEntity user)
+        public string GenerateToken(Guid id, string email)
         {
             Claim[] claims =
             [
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.MobilePhone, user.PhoneNumber)
+                new Claim(ClaimTypes.NameIdentifier, id.ToString()),
+                new Claim(ClaimTypes.Email, email)
             ];
 
             var singningCredentials = new SigningCredentials(

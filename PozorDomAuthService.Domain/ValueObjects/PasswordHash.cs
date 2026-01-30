@@ -1,28 +1,21 @@
-﻿using CSharpFunctionalExtensions;
-using PozorDomAuthService.Domain.Shared;
+﻿using PozorDomAuthService.Domain.Shared.Exceptions;
 
 namespace PozorDomAuthService.Domain.ValueObjects
 {
-    public class PasswordHash : ValueObject
+    public record PasswordHash
     {
         public string Hash { get; }
 
-        private PasswordHash(string hash)
-        {
-            Hash = hash;
-        }
+        private PasswordHash(string hash) => Hash = hash;
 
-        public static Result<PasswordHash, Error> Create(string hash)
+        public static PasswordHash Create(string hash)
         {
             if (string.IsNullOrWhiteSpace(hash))
-                return Result.Failure<PasswordHash, Error>(new Errors.Common.ValueIsRequired(nameof(PasswordHash)));
+            {
+                throw new DomainException("Password hash cannot be empty.");
+            }
 
-            return Result.Success<PasswordHash, Error>(new PasswordHash(hash));
-        }
-
-        protected override IEnumerable<object> GetEqualityComponents()
-        {
-            yield return Hash;
+            return new PasswordHash(hash);
         }
     }
 }

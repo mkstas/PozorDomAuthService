@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PozorDomAuthService.Api.Contracts
 {
-    public record LoginRequest(
+    public record RegisterRequest(
         [Required(ErrorMessage = "Email address is required.")]
         [EmailAddress(ErrorMessage = "Invalid email address format.")]
         [MaxLength(
-            EmailAddress.MAX_ADDRESS_LENGTH, 
+            EmailAddress.MAX_ADDRESS_LENGTH,
             ErrorMessage = "Email address cannot exceed 254 characters.")]
         string EmailAddress,
 

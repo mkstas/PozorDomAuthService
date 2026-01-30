@@ -1,64 +1,38 @@
-﻿using PozorDomAuthService.Domain.Entities;
-using PozorDomAuthService.Domain.Interfaces.Repositories;
+﻿using PozorDomAuthService.Domain.Interfaces.Repositories;
 using PozorDomAuthService.Domain.Interfaces.Services;
-using PozorDomAuthService.Infrastructure.Exceptions;
-using PozorDomAuthService.Infrastructure.Providers.Jwt;
+using PozorDomAuthService.Domain.Models;
+using PozorDomAuthService.Domain.Shared.Exceptions;
+using PozorDomAuthService.Infrastructure.Shared;
 
 namespace PozorDomAuthService.Application.Services
 {
     public class UserService(
-        IUserRepository userRepository,
-        IJwtProvider jwtProvider) : IUserService
+        IUserRepository userRepository) : IUserService
     {
         private readonly IUserRepository _userRepository = userRepository;
-        private readonly IJwtProvider _jwtProvider = jwtProvider;
 
-        public async Task<string> LoginOrRegisterAsync(string phoneNumber)
+        public async Task<User> GetUserByIdAsync(UserId id)
         {
-            var user = await _userRepository.GetUserByPhoneNumberAsync(phoneNumber)
-                ?? await RegisterNewUserAsync(phoneNumber);
-
-            return _jwtProvider.GenerateToken(user);
+            return await _userRepository.GetUserByIdAsync(id)
+                ?? throw new NotFoundException("User with this email address does not exist.");
         }
 
-        private async Task<UserEntity> RegisterNewUserAsync(string phoneNumber)
+        public async Task ChangeEmailAsync(UserId id, string email)
         {
-            await _userRepository.CreateUserAsync(phoneNumber);
-
-            var user = await _userRepository.GetUserByPhoneNumberAsync(phoneNumber);
-
-            return user ?? throw new InternalServerException("Register user failed.");
+            await _userRepository.UpdateEmailAsync(id, email);
         }
 
-        public async Task<UserEntity> GetUserByIdAsync(Guid userId)
+        public async Task ChangePasswordAsync(UserId id, string password, string newPassword)
         {
-            var user = await _userRepository.GetUserByIdAsync(userId);
+            var user = await _userRepository.GetUserByIdAsync(id)
+                ?? throw new NotFoundException("User with this email address does not exist.");
 
-            return user ?? throw new NotFoundException("User not found.");
-        }
+            if (!PasswordHasher.Verify(password, user.Password.Hash))
+            {
+                throw new UnauthorizedAccessException("Current password is incorrect.");
+            }
 
-        public async Task UpdateUserPhoneNumberAsync(Guid userId, string phoneNumber)
-        {
-            var rowsAffected = await _userRepository.UpdatePhoneNumberAsync(userId, phoneNumber);
-
-            if (rowsAffected == 0)
-                throw new NotFoundException("User not found.");
-        }
-
-        public async Task UpdateUserInfoAsync(Guid userId, string fullName)
-        {
-            var rowsAffected = await _userRepository.UpdateInfoAsync(userId, fullName);
-
-            if (rowsAffected == 0)
-                throw new NotFoundException("User not found.");
-        }
-
-        public async Task UpdateUserEmailAsync(Guid userId, string email)
-        {
-            var rowsAffected = await _userRepository.UpdateEmailAsync(userId, email);
-
-            if (rowsAffected == 0)
-                throw new NotFoundException("User not found.");
+            await _userRepository.UpdatePasswordAsync(id, newPassword);
         }
     }
 }

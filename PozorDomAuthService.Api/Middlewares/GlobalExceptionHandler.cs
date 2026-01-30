@@ -1,4 +1,4 @@
-﻿using PozorDomAuthService.Infrastructure.Exceptions;
+﻿using PozorDomAuthService.Domain.Shared.Exceptions;
 using System.Net;
 
 namespace PozorDomAuthService.Api.Middlewares
@@ -7,7 +7,7 @@ namespace PozorDomAuthService.Api.Middlewares
     {
         private class ErrorResponse(int statusCode, string message)
         {
-            public int StatusCode { get; set; } = statusCode;
+            public int Status { get; set; } = statusCode;
             public string Message { get; set; } = message;
         }
 
@@ -19,20 +19,19 @@ namespace PozorDomAuthService.Api.Middlewares
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception caught in GlobalExceptionHandler: {ex}");
                 var response = new ErrorResponse(
                     (int)HttpStatusCode.InternalServerError, ex.Message);
 
                 context.Response.StatusCode = ex switch
                 {
+                    DomainException _ => (int)HttpStatusCode.BadRequest,
                     NotFoundException _ => (int)HttpStatusCode.NotFound,
                     ConflictException _ => (int)HttpStatusCode.Conflict,
                     UnauthorizedAccessException _ => (int)HttpStatusCode.Unauthorized,
-                    InternalServerException _ => (int)HttpStatusCode.InternalServerError,
                     _ => (int)HttpStatusCode.InternalServerError,
                 };
 
-                response.StatusCode = context.Response.StatusCode;
+                response.Status = context.Response.StatusCode;
                 await context.Response.WriteAsJsonAsync(response);
             }
         }

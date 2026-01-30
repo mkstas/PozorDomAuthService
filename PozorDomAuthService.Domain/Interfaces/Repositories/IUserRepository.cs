@@ -5,9 +5,9 @@ namespace PozorDomAuthService.Domain.Interfaces.Repositories
     public interface IUserRepository
     {
         Task CreateUserAync(string email, string passwordHash);
-        Task<User?> GetUserByIdAsync(Guid id);
+        Task<User?> GetUserByIdAsync(UserId id);
         Task<User?> GetUserByEmailAsync(string email);
-        Task UpdateEmailAsync(Guid id, string email);
-        Task UpdatePasswordHashAsync(Guid id, string passwordHash);
+        Task UpdateEmailAsync(UserId id, string email);
+        Task UpdatePasswordAsync(UserId id, string passwordHash);
     }
 }

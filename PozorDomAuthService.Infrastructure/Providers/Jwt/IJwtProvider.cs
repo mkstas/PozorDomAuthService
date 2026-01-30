@@ -1,9 +1,7 @@
-﻿using PozorDomAuthService.Domain.Entities;
-
-namespace PozorDomAuthService.Infrastructure.Providers.Jwt
+﻿namespace PozorDomAuthService.Infrastructure.Providers.Jwt
 {
     public interface IJwtProvider
     {
-        string GenerateToken(UserEntity user);
+        string GenerateToken(Guid id, string email);
     }
 }

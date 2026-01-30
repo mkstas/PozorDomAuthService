@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using PozorDomAuthService.Domain.Entities;
 using PozorDomAuthService.Domain.Interfaces.Repositories;
-using PozorDomAuthService.Infrastructure.Exceptions;
+using PozorDomAuthService.Domain.Models;
+using PozorDomAuthService.Domain.Shared.Exceptions;
+using PozorDomAuthService.Domain.ValueObjects;
 using PozorDomAuthService.Persistence.Extensions;
 
 namespace PozorDomAuthService.Persistence.Repositories
@@ -11,76 +12,61 @@ namespace PozorDomAuthService.Persistence.Repositories
     {
         private readonly PozorDomAuthServiceDbContext _context = context;
 
-        public async Task CreateUserAsync(string phoneNumber)
+        public async Task CreateUserAync(string email, string passwordHash)
         {
             await _context.Users.AddAsync(
-                new UserEntity
-                {
-                    Id = Guid.NewGuid(),
-                    PhoneNumber = phoneNumber,
-                });
+                User.Create(
+                    EmailAddress.Create(email),
+                    PasswordHash.Create(passwordHash)
+                ));
 
             try
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateException ex) when (ex.IsUniqueCreateConstraintViolation("IX_Users_PhoneNumber"))
+            catch (DbUpdateException ex) when (ex.IsUniqueCreateConstraintViolation("IX_users_email"))
             {
-                throw new ConflictException("User with this phone number already exists.");
+                throw new ConflictException("User with this email address already exists.");
             }
         }
 
-        public async Task<UserEntity?> GetUserByIdAsync(Guid userId)
+        public async Task<User?> GetUserByEmailAsync(string email)
         {
             return await _context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == userId);
+                .FirstOrDefaultAsync(u => u.Email.Address == email);
         }
 
-        public async Task<UserEntity?> GetUserByPhoneNumberAsync(string phoneNumber)
+        public async Task<User?> GetUserByIdAsync(UserId id)
         {
             return await _context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+                .FirstOrDefaultAsync(u => u.Id == id);
         }
 
-        public async Task<int> UpdatePhoneNumberAsync(Guid userId, string phoneNumber)
+        public async Task UpdateEmailAsync(UserId id, string email)
         {
+            var user = await _context.Users.FindAsync(id) 
+                ?? throw new NotFoundException("User with this email address does not exist.");
+
             try
             {
-                return await _context.Users
-                    .Where(u => u.Id == userId)
-                    .ExecuteUpdateAsync(u => u
-                        .SetProperty(user => user.PhoneNumber, phoneNumber));
+                user.ChangeEmailAddress(EmailAddress.Create(email));
+                await _context.SaveChangesAsync();
             }
-            catch (PostgresException ex) when (ex.IsUniqueUpdateKeyViolation("IX_Users_PhoneNumber"))
+            catch (PostgresException ex) when (ex.IsUniqueUpdateKeyViolation("IX_users_email"))
             {
-                throw new ConflictException("User with this phone number already exists.");
+                throw new ConflictException("User with this email address already exists.");
             }
         }
 
-        public async Task<int> UpdateInfoAsync(Guid userId, string fullName)
+        public async Task UpdatePasswordAsync(UserId id, string passwordHash)
         {
-            return await _context.Users
-                .Where(u => u.Id == userId)
-                .ExecuteUpdateAsync(u => u
-                    .SetProperty(user => user.FullName, fullName));
-        }
+            var user = await _context.Users.FindAsync(id)
+                ?? throw new NotFoundException("User with this email address does not exist.");
 
-        public async Task<int> UpdateEmailAsync(Guid userId, string email)
-        {
-            return await _context.Users
-                .Where(u => u.Id == userId)
-                .ExecuteUpdateAsync(u => u
-                    .SetProperty(user => user.Email, email));
-        }
-
-        public async Task<int> UpdateImageUrlAsync(Guid userId, string imageUrl)
-        {
-            return await _context.Users
-                .Where(u => u.Id == userId)
-                .ExecuteUpdateAsync(u => u
-                    .SetProperty(user => user.ImageUrl, imageUrl));
+            user.ChangePasswordHash(PasswordHash.Create(passwordHash));
+            await _context.SaveChangesAsync();
         }
     }
 }

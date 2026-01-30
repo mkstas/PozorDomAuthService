@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PozorDomAuthService.Domain.Entities;
+using PozorDomAuthService.Domain.Models;
 using PozorDomAuthService.Persistence.Configurations;
 
 namespace PozorDomAuthService.Persistence
@@ -7,7 +7,7 @@ namespace PozorDomAuthService.Persistence
     public class PozorDomAuthServiceDbContext(
         DbContextOptions<PozorDomAuthServiceDbContext> options) : DbContext(options)
     {
-        public DbSet<UserEntity> Users { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

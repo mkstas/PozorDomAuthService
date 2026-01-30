@@ -4,8 +4,8 @@ namespace PozorDomAuthService.Domain.Interfaces.Services
 {
     public interface IUserService
     {
-        Task<User> GetUserByIdAsync(Guid id);
-        Task ChangeEmailAsync(Guid id, string email);
-        Task ChangePasswordAsync(Guid id, string password, string newPassword);
+        Task<User> GetUserByIdAsync(UserId id);
+        Task ChangeEmailAsync(UserId id, string email);
+        Task ChangePasswordAsync(UserId id, string password, string newPassword);
     }
 }

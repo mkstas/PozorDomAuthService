@@ -1,37 +1,32 @@
-﻿using CSharpFunctionalExtensions;
-using PozorDomAuthService.Domain.Shared;
+﻿using PozorDomAuthService.Domain.Shared.Exceptions;
+using System.Net.Mail;
 
 namespace PozorDomAuthService.Domain.ValueObjects
 {
-    public class EmailAddress : ValueObject
+    public record EmailAddress
     {
-        public string Email { get; }
+        public const int MAX_ADDRESS_LENGTH = 254;
 
-        private EmailAddress(string email)
-        {
-            Email = email;
-        }
+        public string Address { get; }
 
-        public static Result<EmailAddress, Error> Create(string email)
+        private EmailAddress(string address) => Address = address;
+
+        public static EmailAddress Create(string address)
         {
+            if (address.Length > MAX_ADDRESS_LENGTH)
+            {
+                throw new DomainException("Email address must not exceed 254 characters.");
+            }
+
             try
             {
-                var addr = new System.Net.Mail.MailAddress(email);
-
-                if (addr.Address != email)
-                    return Result.Failure<EmailAddress, Error>(new Errors.User.InvalidEmailFormat(email));
+                _ = new MailAddress(address);
+                return new EmailAddress(address);
             }
             catch (Exception)
             {
-                return Result.Failure<EmailAddress, Error>(new Errors.User.InvalidEmailFormat(email));
+                throw new DomainException("Invalid email address format.");
             }
-
-            return Result.Success<EmailAddress, Error>(new EmailAddress(email));
-        }
-
-        protected override IEnumerable<object> GetEqualityComponents()
-        {
-            yield return Email;
         }
     }
 }

@@ -1,52 +1,37 @@
-﻿using CSharpFunctionalExtensions;
-using PozorDomAuthService.Domain.Shared;
-using PozorDomAuthService.Domain.ValueObjects;
+﻿using PozorDomAuthService.Domain.ValueObjects;
 
 namespace PozorDomAuthService.Domain.Models
 {
+    public record UserId(Guid Value);
+
     public class User
     {
-        private User(Guid id, EmailAddress email, PasswordHash passwordHash)
-        {
-            Id = id;
-            Email = email;
-            PasswordHash = passwordHash;
-        }
+        public UserId Id { get; }
 
-        public Guid Id { get; }
         public EmailAddress Email { get; private set; }
-        public PasswordHash PasswordHash { get; private set; }
 
-        public static Result<User, Error> Create(Guid id, EmailAddress email, PasswordHash passwordHash)
+        public PasswordHash Password { get; private set; }
+
+        private User(EmailAddress email, PasswordHash password)
         {
-            if (id == Guid.Empty)
-                return Result.Failure<User, Error>(new Errors.Common.ValueIsRequired(nameof(id)));
-
-            if (email is null)
-                return Result.Failure<User, Error>(new Errors.Common.ValueIsRequired(nameof(email)));
-
-            if (passwordHash is null)
-                return Result.Failure<User, Error>(new Errors.Common.ValueIsRequired(nameof(passwordHash)));
-
-            return Result.Success<User, Error>(new User(id, email, passwordHash));
+            Id = new UserId(Guid.NewGuid());
+            Email = email;
+            Password = password;
         }
 
-        public Result<EmailAddress, Error> ChangeEmail(EmailAddress newEmail)
+        public static User Create(EmailAddress email, PasswordHash password)
         {
-            if (newEmail is null)
-                return Result.Failure<EmailAddress, Error>(new Errors.Common.ValueIsRequired(nameof(newEmail)));
-
-            Email = newEmail;            
-            return Result.Success<EmailAddress, Error>(newEmail);
+            return new User(email, password);
         }
 
-        public Result<PasswordHash, Error> ChangePasswordHash(PasswordHash newPasswordHash)
+        public void ChangeEmailAddress(EmailAddress email)
         {
-            if (newPasswordHash is null)
-                return Result.Failure<PasswordHash, Error>(new Errors.Common.ValueIsRequired(nameof(newPasswordHash)));
+            Email = email;
+        }
 
-            PasswordHash = newPasswordHash;
-            return Result.Success<PasswordHash, Error>(newPasswordHash);
+        public void ChangePasswordHash(PasswordHash password)
+        {
+            Password = password;
         }
     }
 }
